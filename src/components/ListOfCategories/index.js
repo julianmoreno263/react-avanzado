@@ -1,35 +1,18 @@
-
-
-/*exportamos nuestro componente ListOfCategories de forma nombrada, este 
-componente retornara una lista con las categorias de la aplicacion.
-
-Esta lista tendra adentro un array y lo mapeamos con la funcion map(),la cual tendra como parametro
-una funcion que pintara el componente Category*/
-
-/*ahora, en la clase 14 del curso,vamos a comenzar a utilizar hooks en nuestros
-componentes,empezando por este componente,vamos a usar primero el hook de 
-useState*/
-
-
-
-import React,{useState,useEffect} from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Category } from '../Category'
-import {List,Item} from "./styles";
 
-//custom Hook para el fetch de categories
+import { List, Item } from './styles'
 
 function useCategoriesData () {
-  /*hooks useState y useEffect para mostrar la lista de categorias*/
   const [categories, setCategories] = useState([])
-  //nuevo estado de nuestro customHook para tener un loading
   const [loading, setLoading] = useState(false)
 
   useEffect(function () {
     setLoading(true)
-    fetch('http://localhost:3000/categories')
-      .then(data => data.json())
-      .then(data => {
-        setCategories(data)
+    window.fetch('http://localhost:3000/categories')
+      .then(res => res.json())
+      .then(response => {
+        setCategories(response)
         setLoading(false)
       })
   }, [])
@@ -38,28 +21,21 @@ function useCategoriesData () {
 }
 
 export const ListOfCategories = () => {
-  const {categories,loading}=useCategoriesData()
-
-  
-  
-
-
-  /*nuevos useState y useEffect para la segunda lista que sera fija*/
+  const { categories, loading } = useCategoriesData()
   const [showFixed, setShowFixed] = useState(false)
 
-  useEffect (function () {
+  useEffect(function () {
     const onScroll = e => {
       const newShowFixed = window.scrollY > 200
       showFixed !== newShowFixed && setShowFixed(newShowFixed)
     }
-    document.addEventListener("scroll",onScroll)
+
+    document.addEventListener('scroll', onScroll)
+
     return () => document.removeEventListener('scroll', onScroll)
-  },[showFixed])
+  }, [showFixed])
 
-
-
-  //codigo para crear las dos listas de categorias
-  const renderList=(fixed)=>(
+  const renderList = (fixed) => (
     <List fixed={fixed}>
       {
         loading
@@ -69,18 +45,10 @@ export const ListOfCategories = () => {
     </List>
   )
 
-
-
   return (
-    <>
+    <Fragment>
       {renderList()}
       {showFixed && renderList(true)}
-    </>
-    
+    </Fragment>
   )
 }
-
-
-
-
-
